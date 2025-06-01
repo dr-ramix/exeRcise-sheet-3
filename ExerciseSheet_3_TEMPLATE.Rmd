@@ -106,6 +106,12 @@ Converting the film_rating variable to a factor type is appropriate because the 
 
 b)  Inspect the film titles manually. Which films form a film series? A film series can be identified by a common word in the titles of the films, often in conjunction with a number in the title, e.g. "Despicable Me" and "Despicable Me 2". Create a dataframe which displays a list of the different series with the titles of the films and how many films belong to the series. Output the dataframe.
 
+The followings are films with a film series: 
+Toy Story
+Cars
+Incredibles 
+
+
 c)  Load the `public_response` dataframe into R. Convert the `cinema_score` variable into a factor while ensuring the factor levels are defined in ascending order, from the lowest to the highest score. Combine `public_response` with the `pixar_films` dataset using an appropriate merge variable.
 
 d)  Choose one of the variables representing the public response and create a bar plot for the films belonging to a series. Here are the details of the plot:
