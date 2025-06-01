@@ -96,6 +96,12 @@ pixar_films <- pixar_films%>%filter(!is.na(film))
 
 The film_rating variable is a character-type column representing the Motion Picture Association (MPA) film rating assigned to each movie. These ratings indicate the appropriateness of a film’s content for different audiences. "G" means the film is suitable for general audiences of all ages and contains no content likely to offend. "PG" suggests that parental guidance is recommended, as some material may not be suitable for young children. "PG-13" indicates that parents are strongly cautioned, since the film may include content inappropriate for children under 13. "R" means the film is restricted and viewers under 17 require an accompanying adult due to strong language, violence, or adult themes. "NC-17" signifies that no one 17 and under is admitted, as the content is explicitly adult. This variable is useful for analyzing or filtering films based on audience suitability. Only G and PG values are visible in this dataset.
 
+
+```{r message=FALSE, warning=FALSE}
+pixar_films$film_rating <- as.factor(pixar_films$film_rating)
+```
+
+Converting the film_rating variable to a factor type is appropriate because the ratings represent a limited set of distinct categories. In other words, since film_rating is a categorical variable with a fixed number of possible values, using a factor data type facilitates efficient storage and analysis.
 <!-- -->
 
 b)  Inspect the film titles manually. Which films form a film series? A film series can be identified by a common word in the titles of the films, often in conjunction with a number in the title, e.g. "Despicable Me" and "Despicable Me 2". Create a dataframe which displays a list of the different series with the titles of the films and how many films belong to the series. Output the dataframe.
