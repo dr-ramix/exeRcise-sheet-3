@@ -76,6 +76,11 @@ Installing required packages
 #install.packages("tidyverse")
 ```
 
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+```
+
 Loading the datasets
 ```{r message=FALSE, warning=FALSE}
 tuesdata <- tidytuesdayR::tt_load('2025-03-11')
@@ -84,6 +89,12 @@ tuesdata <- tidytuesdayR::tt_load('2025-03-11')
 pixar_films <- tuesdata$pixar_films
 public_response <- tuesdata$public_response
 ```
+
+```{r message=FALSE, warning=FALSE}
+pixar_films <- pixar_films%>%filter(!is.na(film))
+```
+
+
 <!-- -->
 
 b)  Inspect the film titles manually. Which films form a film series? A film series can be identified by a common word in the titles of the films, often in conjunction with a number in the title, e.g. "Despicable Me" and "Despicable Me 2". Create a dataframe which displays a list of the different series with the titles of the films and how many films belong to the series. Output the dataframe.
