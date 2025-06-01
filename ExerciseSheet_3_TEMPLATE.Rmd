@@ -110,6 +110,36 @@ The followings are films with a film series:
 Toy Story
 Cars
 Incredibles 
+Monsters
+
+```{r message=FALSE, warning=FALSE}
+library(stringr)
+
+extract_series_name <- function(title) {
+  title <- tolower(title)
+  title <- str_replace_all(title, "[[:punct:]]", "")             # Remove punctuation
+  title <- str_remove_all(title, "\\bthe\\b")                    # Remove "the"
+  title <- str_remove_all(title, "\\b(university|inc|ltd|llc)\\b") # Remove suffixes
+  title <- str_remove_all(title, "\\b\\d+\\b")                   # Remove numbers
+  title <- str_squish(title)                                     # Trim extra spaces
+  return(title)
+}
+
+```
+
+```{r message=FALSE, warning=FALSE}
+# Add a series name column
+pixar_films_grouped_series <- pixar_films %>%
+                            mutate(series = extract_series_name(film)) %>%
+                            group_by(series) %>%
+                            summarise(
+                              films = paste(film, collapse = ", "),
+                              number_of_films = n()
+                            ) %>%
+                            arrange(desc(number_of_films)) %>%
+                            filter(number_of_films > 1)
+head(pixar_films_grouped_series)
+```
 
 
 c)  Load the `public_response` dataframe into R. Convert the `cinema_score` variable into a factor while ensuring the factor levels are defined in ascending order, from the lowest to the highest score. Combine `public_response` with the `pixar_films` dataset using an appropriate merge variable.
