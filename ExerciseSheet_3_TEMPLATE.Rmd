@@ -87,7 +87,6 @@ tuesdata <- tidytuesdayR::tt_load('2025-03-11')
 
 
 pixar_films <- tuesdata$pixar_films
-public_response <- tuesdata$public_response
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -143,6 +142,24 @@ head(pixar_films_grouped_series)
 
 
 c)  Load the `public_response` dataframe into R. Convert the `cinema_score` variable into a factor while ensuring the factor levels are defined in ascending order, from the lowest to the highest score. Combine `public_response` with the `pixar_films` dataset using an appropriate merge variable.
+
+```{r message=FALSE, warning=FALSE}
+public_response <- tuesdata$public_response
+
+
+# Load and clean public_response
+score_levels <- c("F", "D", "C-","C","C+", "B-", "B", "B+", "A-", "A", "A+")
+
+
+public_response <- public_response %>%
+                   mutate(cinema_score = factor(cinema_score, levels = score_levels, ordered = TRUE)) %>%
+                  arrange(cinema_score)
+```
+
+```{r message=FALSE, warning=FALSE}
+pixar_public_response <- full_join(public_response, pixar_films, by = "film") 
+```
+
 
 d)  Choose one of the variables representing the public response and create a bar plot for the films belonging to a series. Here are the details of the plot:
 
