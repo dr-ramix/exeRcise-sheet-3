@@ -192,8 +192,78 @@ c)  Put the name / title of the dataset and a link to it below.
 -   Link: [https://github.com/owid/owid-datasets/blob/master/datasets/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017)/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017).csv](https://github.com/owid/owid-datasets/blob/master/datasets/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017)/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017).csv){.uri}
 
 d)  Come up with a (research) question you want to answer with the data and briefly explain why you believe this is an interesting question within one sentence. It should be a question that can be answered with the dataset and using R.
+
+    **Research Question:**
+
+    **Which countries have experienced the most significant change in their dominant type of alcohol consumption between 1964 and 2014?**
+
+    This is interesting because it reveals long-term shifts in national drinking cultures and possible effects of public policy or global trends.
+
 e)  Use R to answer your chosen question. Please limit your analysis to the functions and techniques we have covered so far in the course. You are **not expected** to use advanced statistical models or external packages which haven't been introduced.
+
+```{r message=FALSE, warning=FALSE}
+# Load the data
+alcohol_data <- read_csv("dataset/dataset.csv")
+
+# Preview data
+head(alcohol_data)
+```
+
+```{r message=FALSE, warning=FALSE}
+
+filtered_data <- alcohol_data %>%
+  filter(Year %in% c(1964, 2014))
+
+
+get_dominant_type <- function(wine, beer, spirits) {
+  types <- c("Wine", "Beer", "Spirits")
+  values <- c(wine, beer, spirits)
+  return(types[which.max(values)])
+}
+
+filtered_data <- filtered_data %>%
+  rowwise() %>%
+  mutate(Dominant = get_dominant_type(`Wine (% total alcohol)`, `Beer (% total alcohol)`, `Spirits (% total alcohol)`)) %>%
+  ungroup()
+
+
+dominance_change <- filtered_data %>%
+  select(Entity, Year, Dominant) %>%
+  pivot_wider(names_from = Year, values_from = Dominant, names_prefix = "Year_") %>%
+  filter(!is.na(Year_1964) & !is.na(Year_2014)) %>%
+  mutate(Changed = Year_1964 != Year_2014)
+
+
+changed_countries <- dominance_change %>%
+  filter(Changed == TRUE)
+
+head(changed_countries)
+
+```
+
 f)  Create a meaningful plot / figure with the dataset. Make sure to provide a figure caption (via the chunk options / Rmarkdown) and correctly label the figure.
+
+```{r message=FALSE, warning=FALSE}
+# Select 3 countries with change
+selected_countries <- c("Australia", "Denmark", "Finland", "United Kingdom")
+
+# Convert to long format
+alcohol_long <- alcohol_data %>%
+  filter(Entity %in% selected_countries) %>%
+  pivot_longer(cols = c(`Wine (% total alcohol)`, `Beer (% total alcohol)`, `Spirits (% total alcohol)`), names_to = "Type", values_to = "Percentage")
+
+# Plot
+ggplot(alcohol_long, aes(x = Year, y = Percentage, color = Type)) +
+  geom_line(size = 1) +
+  facet_wrap(~Entity) +
+  labs(
+    title = "Alcohol Consumption by Type in Selected Countries (1964–2014)",
+    x = "Year",
+    y = "% of Total Alcohol Consumption",
+    color = "Alcohol Type"
+  ) +
+  theme_minimal()
+```
 
 ## Final Note
 
