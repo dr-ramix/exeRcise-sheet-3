@@ -67,10 +67,10 @@ Link: <https://github.com/rfordatascience/tidytuesday/tree/main/data/2025/2025-0
 
 For small datasets like these adding them to git is not a problem.
 
-
 a)  Load the `pixar_films` dataset into R. Clean the dataset by removing films without a title. Inspect the variable `film_rating`. What are the possible values and what do they mean? Create a factor variable for the film rating. Why is this appropriate?
 
 Installing required packages
+
 ```{r message=FALSE, warning=FALSE}
 #install.packages("tidytuesdayR")
 #install.packages("tidyverse")
@@ -82,6 +82,7 @@ library(tidytuesdayR)
 ```
 
 Loading the datasets
+
 ```{r message=FALSE, warning=FALSE}
 tuesdata <- tidytuesdayR::tt_load('2025-03-11')
 
@@ -95,21 +96,15 @@ pixar_films <- pixar_films%>%filter(!is.na(film))
 
 The film_rating variable is a character-type column representing the Motion Picture Association (MPA) film rating assigned to each movie. These ratings indicate the appropriateness of a film’s content for different audiences. "G" means the film is suitable for general audiences of all ages and contains no content likely to offend. "PG" suggests that parental guidance is recommended, as some material may not be suitable for young children. "PG-13" indicates that parents are strongly cautioned, since the film may include content inappropriate for children under 13. "R" means the film is restricted and viewers under 17 require an accompanying adult due to strong language, violence, or adult themes. "NC-17" signifies that no one 17 and under is admitted, as the content is explicitly adult. This variable is useful for analyzing or filtering films based on audience suitability. Only G and PG values are visible in this dataset.
 
-
 ```{r message=FALSE, warning=FALSE}
 pixar_films$film_rating <- as.factor(pixar_films$film_rating)
 ```
 
-Converting the film_rating variable to a factor type is appropriate because the ratings represent a limited set of distinct categories. In other words, since film_rating is a categorical variable with a fixed number of possible values, using a factor data type facilitates efficient storage and analysis.
-<!-- -->
+Converting the film_rating variable to a factor type is appropriate because the ratings represent a limited set of distinct categories. In other words, since film_rating is a categorical variable with a fixed number of possible values, using a factor data type facilitates efficient storage and analysis. <!-- -->
 
 b)  Inspect the film titles manually. Which films form a film series? A film series can be identified by a common word in the titles of the films, often in conjunction with a number in the title, e.g. "Despicable Me" and "Despicable Me 2". Create a dataframe which displays a list of the different series with the titles of the films and how many films belong to the series. Output the dataframe.
 
-The followings are films with a film series: 
-Toy Story
-Cars
-Incredibles 
-Monsters
+The followings are films with a film series: Toy Story Cars Incredibles Monsters
 
 ```{r message=FALSE, warning=FALSE}
 library(stringr)
@@ -140,14 +135,13 @@ pixar_films_grouped_series <- pixar_films %>%
 head(pixar_films_grouped_series)
 ```
 
-
 c)  Load the `public_response` dataframe into R. Convert the `cinema_score` variable into a factor while ensuring the factor levels are defined in ascending order, from the lowest to the highest score. Combine `public_response` with the `pixar_films` dataset using an appropriate merge variable.
 
 ```{r message=FALSE, warning=FALSE}
 public_response <- tuesdata$public_response
 
 
-# Load and clean public_response
+# A character vector to define the order of cinema_score, when we convert it to factor data typ 
 score_levels <- c("F", "D", "C-","C","C+", "B-", "B", "B+", "A-", "A", "A+")
 
 
@@ -160,7 +154,6 @@ public_response <- public_response %>%
 pixar_public_response <- full_join(public_response, pixar_films, by = "film") 
 ```
 
-
 d)  Choose one of the variables representing the public response and create a bar plot for the films belonging to a series. Here are the details of the plot:
 
     -   The film series are represented on the x-axis.
@@ -170,16 +163,33 @@ d)  Choose one of the variables representing the public response and create a ba
 
     What do you notice when comparing the scores of the films in a series? Do you see any patterns?
 
+```{r message=FALSE, warning=FALSE}
+
+pixar_public_response <- pixar_public_response %>%
+  mutate(series = extract_series_name(film))
+
+
+# Ensure films are ordered by release date within each series
+plot_data <- pixar_public_response %>%
+  filter(!is.na(series)) %>%
+  arrange(series, release_date) %>%
+  mutate(film = factor(film, levels = unique(film)))  # to preserve order
+  
+
+```
+
 ## Exercise 4: Open Analysis (4 points)
 
 This exercise is a bit more open-ended. You can choose any dataset from [Our World in Data](https://ourworldindata.org/) and analyze it, while determining the research question yourself.
 
 a)  Go to <https://github.com/owid/owid-datasets/tree/master/datasets> and choose a dataset that interests you. You can have a look at <https://ourworldindata.org/> to gather some inspiration.
+
 b)  Download the dataset and track it in git.
+
 c)  Put the name / title of the dataset and a link to it below.
 
--   Dataset Name: ...
--   Link: <https://github.com/owid/owid-datasets/>...
+-   Dataset Name: [Alcohol consumption by type since 1890 (Alexander & Holmes, 2017)](https://github.com/owid/owid-datasets/tree/master/datasets/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017))
+-   Link: [https://github.com/owid/owid-datasets/blob/master/datasets/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017)/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017).csv](https://github.com/owid/owid-datasets/blob/master/datasets/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017)/Alcohol%20consumption%20by%20type%20since%201890%20(Alexander%20%26%20Holmes%2C%202017).csv){.uri}
 
 d)  Come up with a (research) question you want to answer with the data and briefly explain why you believe this is an interesting question within one sentence. It should be a question that can be answered with the dataset and using R.
 e)  Use R to answer your chosen question. Please limit your analysis to the functions and techniques we have covered so far in the course. You are **not expected** to use advanced statistical models or external packages which haven't been introduced.
